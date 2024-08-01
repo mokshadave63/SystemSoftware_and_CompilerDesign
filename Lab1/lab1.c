@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<conio.h>
-#include <string.h>
-#include <ctype.h>
+#include<string.h>
+#include<ctype.h>
 
 int isKeyword(char* str) {
     char keywords[32][10] = {
@@ -9,15 +9,14 @@ int isKeyword(char* str) {
         "case", "enum", "typedef", "char", "return", "const", 
         "float", "for", "void", "goto", "sizeof", "do", "if", "static", "while"
     };
-    int i;
-    for(i=0; i<32; ++i){
-      if(strcmp(keywords[i], str)== 0){
-      return 1;
-      }
+    for(int i = 0; i < 32; ++i) {
+        if(strcmp(keywords[i], str) == 0) {
+            return 1;
+        }
     }
-    
     return 0;
 }
+
 int isIdentifier(char* str) {
     if (!isalpha(str[0]) && str[0] != '_') {
         return 0;
@@ -30,46 +29,55 @@ int isIdentifier(char* str) {
     return 1;
 }
 
-int isNumber(char* str){
-  int i=0;
-  if(str[0]== '-'){
-    i=1;
-
-  }
-  for(; i<strlen(str); ++i){
-    if(!isdigit(str[i])){
-      return 0;
+int isNumber(char* str) {
+    int i = 0;
+    if(str[0] == '-') {
+        i = 1;
     }
-  }
-  return 1;
+    for(; i < strlen(str); ++i) {
+        if(!isdigit(str[i])) {
+            return 0;
+        }
+    }
+    return 1;
 }
 
-int isOperator(char ch){
-  char operators[]= "+-*/%=;";
-  for(int i =0; i< strlen(operators); ++i){
-    if(ch == operators[i]){
-      return 1;
+int isOperator(char ch) {
+    char operators[] = "+-*/%=";
+    for(int i = 0; i < strlen(operators); ++i) {
+        if(ch == operators[i]) {
+            return 1;
+        }
     }
-  }
-  return 0;
- }
+    return 0;
+}
 
- int main(){
-  int count = 0, count_dig = 0, count_op = 0, count_id = 0, count_sep = 0;
-  FILE *fp;
-  char filename[50];
-  char word[50];
+int isSeparator(char ch) {
+    char separators[] = ";,(){}[]";
+    for(int i = 0; i < strlen(separators); ++i) {
+        if(ch == separators[i]) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
-  printf("enter the filename:");
-  scanf("%s", filename);
+int main() {
+    int count = 0, count_dig = 0, count_op = 0, count_id = 0, count_sep = 0;
+    FILE *fp;
+    char filename[50];
+    char word[50];
 
-  fp=fopen(filename,"r");
-  if(fp== NULL){
-    printf("error openeing the file %s", filename);
-    return 1;
-  }
+    printf("enter the filename: ");
+    scanf("%s", filename);
 
-  while (fscanf(fp, "%s", word) != EOF) {
+    fp = fopen(filename, "r");
+    if(fp == NULL) {
+        printf("error opening the file %s", filename);
+        return 1;
+    }
+
+    while(fscanf(fp, "%s", word) != EOF) {
         if (isKeyword(word)) {
             printf("%s is a keyword.\n", word);
             count++;
@@ -82,15 +90,20 @@ int isOperator(char ch){
         } else if (strlen(word) == 1 && isOperator(word[0])) {
             printf("%s is an operator.\n", word);
             count_op++;
+        } else if (strlen(word) == 1 && isSeparator(word[0])) {
+            printf("%s is a separator.\n", word);
+            count_sep++;
         } else {
             printf("Cannot identify %s.\n", word);
         }
     }
+
     printf("\nKeywords: %d", count);
     printf("\nIdentifiers: %d", count_id);
     printf("\nDigits: %d", count_dig);
     printf("\nOperators: %d", count_op);
-     fclose(fp);
+    printf("\nSeparators: %d", count_sep);
 
+    fclose(fp);
     return 0;
- }
+}
