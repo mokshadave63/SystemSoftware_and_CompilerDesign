@@ -27,7 +27,6 @@ void addToSet(char *set, char symbol) {
     }
 }
 
-
 void computeFirstSets() {
     bool changed;
     do {
@@ -47,17 +46,20 @@ void computeFirstSets() {
                 } else {
                     char *nextFirstSet = firstSets[rule[j] - 'A'];
                     for (int k = 0; nextFirstSet[k] != '\0'; k++) {
-                        if (nextFirstSet[k] != 'e' && !strchr(firstSet, nextFirstSet[k])) {
+                        if (nextFirstSet[k] != '#' && !strchr(firstSet, nextFirstSet[k])) {
                             addToSet(firstSet, nextFirstSet[k]);
                             changed = true;
                         }
                     }
-                    if (!strchr(nextFirstSet, 'e')) break;
-                    if (rule[j + 1] == '\0') {
-                        if (!strchr(firstSet, 'e')) {
-                            addToSet(firstSet, 'e');
-                            changed = true;
+                    if (strchr(nextFirstSet, '#')) {
+                        if (rule[j + 1] == '\0') {
+                            if (!strchr(firstSet, '#')) {
+                                addToSet(firstSet, '#');
+                                changed = true;
+                            }
                         }
+                    } else {
+                        break;
                     }
                 }
             }
@@ -65,9 +67,8 @@ void computeFirstSets() {
     } while (changed);
 }
 
-// Compute FOLLOW set
 void computeFollowSets() {
-    addToSet(followSets[0], '$');  // FOLLOW(S) includes $
+    addToSet(followSets[productions[0][0] - 'A'], '$');  // FOLLOW(S) includes $
 
     bool changed;
     do {
@@ -90,12 +91,12 @@ void computeFollowSets() {
                         } else {
                             char *nextFirstSet = firstSets[rule[j + 1] - 'A'];
                             for (int k = 0; nextFirstSet[k] != '\0'; k++) {
-                                if (nextFirstSet[k] != 'e' && !strchr(currentFollowSet, nextFirstSet[k])) {
+                                if (nextFirstSet[k] != '#' && !strchr(currentFollowSet, nextFirstSet[k])) {
                                     addToSet(currentFollowSet, nextFirstSet[k]);
                                     changed = true;
                                 }
                             }
-                            if (strchr(nextFirstSet, 'e')) {
+                            if (strchr(nextFirstSet, '#')) {
                                 for (int k = 0; followSet[k] != '\0'; k++) {
                                     if (!strchr(currentFollowSet, followSet[k])) {
                                         addToSet(currentFollowSet, followSet[k]);
